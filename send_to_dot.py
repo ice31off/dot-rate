@@ -1,7 +1,7 @@
 import requests
 import base64
 import os
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from PIL import Image, ImageDraw, ImageFont
 import io
 import urllib.request
@@ -13,12 +13,12 @@ res = requests.get('https://api.frankfurter.app/latest?from=USD&to=JPY')
 data = res.json()
 rate = data['rates']['JPY']
 
-now = datetime.now()
+JST = timezone(timedelta(hours=9))
+now = datetime.now(JST)
 date_str = f"{now.month:02d}月{now.day:02d}日  {now.hour:02d}:{now.minute:02d}時点"
 
 W, H = 296, 128
 
-# 日本語フォントをダウンロード
 font_url = "https://github.com/googlefonts/noto-cjk/raw/main/Sans/OTF/Japanese/NotoSansCJKjp-Bold.otf"
 font_path = "/tmp/NotoSansCJK.otf"
 urllib.request.urlretrieve(font_url, font_path)

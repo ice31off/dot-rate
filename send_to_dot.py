@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 import io
+import urllib.request
 
 DOT_API_KEY = os.environ['DOT_API_KEY']
 DEVICE_ID = os.environ['DEVICE_ID']
@@ -16,29 +17,31 @@ now = datetime.now()
 date_str = f"{now.month:02d}月{now.day:02d}日  {now.hour:02d}:{now.minute:02d}時点"
 
 W, H = 296, 128
+
+# 日本語フォントをダウンロード
+font_url = "https://github.com/googlefonts/noto-cjk/raw/main/Sans/OTF/Japanese/NotoSansCJKjp-Bold.otf"
+font_path = "/tmp/NotoSansCJK.otf"
+urllib.request.urlretrieve(font_url, font_path)
+
 img = Image.new('RGB', (W, H), color='#5BB8F5')
 draw = ImageDraw.Draw(img)
 
-try:
-    font_small = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 16)
-    font_large = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 52)
-except:
-    font_small = ImageFont.load_default()
-    font_large = ImageFont.load_default()
+font_small = ImageFont.truetype(font_path, 14)
+font_large = ImageFont.truetype(font_path, 48)
 
-draw.text((12, 10), "USD/JPY", font=font_small, fill='black')
+draw.text((12, 8), "USD/JPY", font=font_small, fill='black')
 
 date_bbox = draw.textbbox((0, 0), date_str, font=font_small)
 date_w = date_bbox[2] - date_bbox[0]
-draw.text((W - date_w - 12, 10), date_str, font=font_small, fill='black')
+draw.text((W - date_w - 12, 8), date_str, font=font_small, fill='black')
 
-draw.line([(12, 34), (W - 12, 34)], fill='black', width=1)
+draw.line([(12, 30), (W - 12, 30)], fill='black', width=1)
 
 rate_str = f"{rate:.2f} 円"
 rate_bbox = draw.textbbox((0, 0), rate_str, font=font_large)
 rate_w = rate_bbox[2] - rate_bbox[0]
 rate_h = rate_bbox[3] - rate_bbox[1]
-draw.text(((W - rate_w) / 2, (H - rate_h) / 2 + 16), rate_str, font=font_large, fill='black')
+draw.text(((W - rate_w) / 2, (H - rate_h) / 2 + 18), rate_str, font=font_large, fill='black')
 
 buffer = io.BytesIO()
 img.save(buffer, format='PNG')

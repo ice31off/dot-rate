@@ -1,0 +1,29 @@
+name: ドル円レートをDotに送信
+
+on:
+  schedule:
+    - cron: '0 21 * * *'
+    - cron: '0 3 * * *'
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+jobs:
+  send-rate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Pythonをセットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 必要なライブラリをインストール
+        run: pip install requests Pillow
+
+      - name: ドル円レートを送信
+        env:
+          DOT_API_KEY: ${{ secrets.DOT_API_KEY }}
+          DEVICE_ID: ${{ secrets.DEVICE_ID }}
+        run: python send_to_dot.py

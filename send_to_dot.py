@@ -9,9 +9,9 @@ import urllib.request
 DOT_API_KEY = os.environ['DOT_API_KEY']
 DEVICE_ID = os.environ['DEVICE_ID']
 
-res = requests.get('https://api.frankfurter.app/latest?from=USD&to=JPY')
+res = requests.get('https://forex-api.coin.z.com/public/v1/ticker?symbol=USD_JPY')
 data = res.json()
-rate = data['rates']['JPY']
+rate = float(data['data'][0]['bid'])
 
 JST = timezone(timedelta(hours=9))
 now = datetime.now(JST)
